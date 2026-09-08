@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(terraform version *)",
+      "PowerShell(Get-Command terraform -ErrorAction SilentlyContinue)",
+      "PowerShell(terraform -v 2>&1)",
+      "Read(//c/Program Files/**)",
+      "Bash(where.exe terraform *)",
+      "PowerShell(winget install --id HashiCorp.Terraform -e --accept-source-agreements --accept-package-agreements)",
+      "PowerShell(winget search terraform)",
+      "PowerShell(winget install --id Hashicorp.Terraform -e --accept-source-agreements --accept-package-agreements)",
+      "Bash(command -v bash.exe)",
+      "Bash(gh --version)",
+      "Bash(curl -s -o /tmp/lead.json -w \"HTTP %{http_code}\\\\n\" \"https://api.github.com/repos/usamarasheed26/leadership-sim\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s -o /tmp/auto.json -w \"HTTP %{http_code}\\\\n\" \"https://api.github.com/repos/usamarasheed26/autorevive-dynamics\")",
+      "Bash(curl -s -o /tmp/user.json -w \"HTTP %{http_code}\\\\n\" \"https://api.github.com/users/usamarasheed26\")",
+      "Bash(curl -s \"https://api.github.com/users/usamarasheed26/repos?per_page=100\")",
+      "Bash(ssh -o StrictHostKeyChecking=accept-new -i ./ssh/production-infra-key root@165.227.101.246 \"echo CONNECTED; uptime; systemctl is-active nginx ufw; nginx -v 2>&1; ls /etc/nginx/sites-enabled/\")",
+      "Bash(ssh -i ./ssh/production-infra-key root@165.227.101.246 ' *)",
+      "Bash(ssh -i *)",
+      "Bash(nc -zv -w 10 165.227.101.246 22)",
+      "Bash(nc -zv -w 10 165.227.101.246 80)",
+      "Bash(timeout 10 bash -c 'cat < /dev/null > /dev/tcp/165.227.101.246/22')",
+      "Bash(timeout 10 bash -c 'cat < /dev/null > /dev/tcp/165.227.101.246/80')",
+      "Bash(ssh -o ConnectTimeout=20 -o ServerAliveInterval=5 -o ServerAliveCountMax=3 -i ./ssh/production-infra-key root@165.227.101.246 'echo CONNECTED; uptime; free -h; echo \"---swap---\"; swapon --show')",
+      "Bash(ssh -o ConnectTimeout=45 -o ServerAliveInterval=5 -i ./ssh/production-infra-key root@165.227.101.246 'echo CONNECTED')",
+      "Bash(ssh -o ConnectTimeout=30 -i ./ssh/production-infra-key root@165.227.101.246 'echo CONNECTED; uptime; free -h')",
+      "Bash(ssh -o ConnectTimeout=30 -i ./ssh/production-infra-key root@165.227.101.246 ' *)",
+      "Bash(ssh -o *)",
+      "Bash(ssh -o ConnectTimeout=20 -i ./ssh/production-infra-key root@165.227.101.246 ' *)",
+      "Bash(ssh -o ConnectTimeout=20 -i ./ssh/production-infra-key root@165.227.101.246 'echo CONNECTED; uptime; free -h; docker ps -a --format \"table {{.Names}}\\\\t{{.Status}}\"')"
+    ]
+  }
+}

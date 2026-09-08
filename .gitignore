@@ -1,0 +1,16 @@
+# Local Terraform state and cache
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Sensitive variable files
+*.tfvars
+*.tfvars.json
+
+# Generated SSH key material (private + public halves)
+ssh/
+
+# Build archives
+*.tar.gz
