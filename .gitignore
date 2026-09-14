@@ -14,3 +14,7 @@ ssh/
 
 # Build archives
 *.tar.gz
+
+# Local off-box backups: state snapshots + production DB dumps (contain PII).
+# Never commit these.
+_backup/

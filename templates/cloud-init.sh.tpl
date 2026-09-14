@@ -37,7 +37,8 @@ ufw default allow outgoing
 ufw allow 22/tcp
 ufw allow 80/tcp
 ufw allow 443/tcp
-ufw allow 8000/tcp
+# Coolify UI (8000) is intentionally NOT opened — reach it via an SSH tunnel:
+#   ssh -L 8000:localhost:8000 root@<host>
 ufw --force enable
 
 # --- 5. Coolify Automated Installation --------------------------------------

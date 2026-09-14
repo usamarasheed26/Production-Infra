@@ -8,9 +8,9 @@ output "server_ipv6" {
   value       = hcloud_server.coolify.ipv6_address
 }
 
-output "coolify_url" {
-  description = "URL to access the Coolify Dashboard UI once bootstrapping finishes."
-  value       = "http://${hcloud_server.coolify.ipv4_address}:8000"
+output "coolify_dashboard_access" {
+  description = "Coolify UI is not exposed publicly (firewall). Tunnel in, then open http://localhost:8000"
+  value       = "ssh -i ${path.module}/ssh/${var.ssh_key_name} -L 8000:localhost:8000 root@${hcloud_server.coolify.ipv4_address}"
 }
 
 output "ssh_private_key_path" {
