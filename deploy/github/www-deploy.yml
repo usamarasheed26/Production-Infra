@@ -1,0 +1,18 @@
+# → Add to the usamarasheed26/usamarasheed26.github.io repo as
+#   .github/workflows/deploy.yml
+# Requires the reusable workflow repo usamarasheed26/stratagem-deploy and the
+# org/repo secrets DEPLOY_HOST / DEPLOY_USER / DEPLOY_SSH_KEY.
+
+name: Deploy to production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    uses: usamarasheed26/stratagem-deploy/.github/workflows/deploy-reusable.yml@main
+    with:
+      app: www
+    secrets: inherit

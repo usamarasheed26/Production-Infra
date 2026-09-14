@@ -1,0 +1,19 @@
+{
+    "repo":  "usamarasheed26/Macrolab",
+    "branch":  "master",
+    "compose":  [
+                    "-f",
+                    "docker-compose.prod.yml"
+                ],
+    "envFlags":  [
+                     "--env-file",
+                     ".env.production"
+                 ],
+    "domain":  "macrolab.stratagemengine.com",
+    "healthPath":  "/",
+    "healthCodes":  [
+                        "200"
+                    ],
+    "migrate":  null,
+    "notes":  "ADDENDUM 2026-09-14 (PR #1 review): /opt/apps/.deploy-history.log shows a rocky 2026-09-13 deploy sequence for this app -- two fail-build attempts (440299b, 40f78b9), one rollback (294f661, 'compose up failed'), then a successful run (ba43cb4). The root cause of the two failures is NOT confirmed from the log alone -- it is UNKNOWN whether this sequence touched or fixed the dual ESM/CJS engine/dist gap described below, or hit an unrelated build problem; treat that gap as still OPEN until someone confirms web/engine/dist is now built from source in a clean clone. PHASE 0 DONE 2026-09-12: /opt/apps/Macrolab is now a real git checkout of origin/master (commits e906972, 150ee87, 202a4c4), rebuilt and cut over, verified with a live write/read smoke test. .deploy.json installed. Old directory kept at /opt/apps/Macrolab.pre-git-backup-20260912 as a safety net (not yet deleted). DB FIX (e906972): converged off broken (0-byte) SQLite onto a dedicated `macrolab` database + `macrolab_app` role on the shared authoritative Postgres instance; schema.prisma sqlite->postgresql; DATABASE_URL via box-only .env.production/env_file. Reconciling this surfaced two MORE undocumented server-only fixes beyond DEPLOYMENT.md section 3's list, now also committed: (150ee87) engine+api tsconfig/package.json reverted from ESM back to CommonJS -- this was the actual root cause of the 'multi-day-outage' DEPLOYMENT.md references; (202a4c4) Dockerfile needs `apk add openssl` for Prisma's linux-musl-openssl-3.0.x binaryTarget to find libssl at runtime, plus a build-output CMD path fix. OPEN GAP found during Phase 0 (not previously documented anywhere), status as of 2026-09-14 UNCONFIRMED (see addendum above): Dockerfile.web does NOT build engine/dist from source -- web's Vite/Rollup build cannot cleanly named-import DEFAULTS etc. from engine once engine is compiled to CommonJS (required by api's require() side). As of the last confirmed check, the deployed web image was built from a frozen, pre-CommonJS-conversion engine/dist that existed only as an untracked file in /opt/apps/Macrolab/engine/dist (copied forward from the old directory, restored from /opt/apps/Macrolab.pre-git-backup-20260912/engine/dist -- NOT reproducible from a clean clone). Fixing this properly needs engine to ship as a dual ESM/CJS package (or web's rollup config needs commonjs named-exports interop configured) -- flagging for a dedicated follow-up and a live confirmation of current state."
+}

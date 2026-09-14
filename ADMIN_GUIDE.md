@@ -1,5 +1,12 @@
 # Administrator Guide — StratagemEngine Deployment
 
+> ⚠️ **HISTORICAL — DigitalOcean era. Superseded 2026-09-10.**
+> The procedures below (host Nginx vhosts, `certbot`, `systemctl` app units,
+> the DO API power-cycle, `165.227.101.246`) describe the retired droplet.
+> Current production is HetzCloud + Coolify + Traefik; see
+> [`10-SEPT-2026-PRODUCTION-DEPLOYMENT.md`](10-SEPT-2026-PRODUCTION-DEPLOYMENT.md)
+> §9 (deployment) and §14 (runbook).
+
 `DEPLOYMENT.md` is the **reference**: what's running, where, and why (per-app
 paths, env files, and the specific bugs fixed in each repo). This file is the
 **playbook**: the repeatable procedures for operating the system day-to-day.

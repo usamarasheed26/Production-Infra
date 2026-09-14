@@ -1,5 +1,13 @@
 # StratagemEngine Production Deployment — Reference Guide
 
+> ⚠️ **HISTORICAL — DigitalOcean era. Superseded 2026-09-10.**
+> Production has migrated from the DigitalOcean droplet described below to
+> HetzCloud (Coolify + Traefik, single `cx43` server in `fsn1`). The droplet,
+> its IPs, host Nginx, certbot and systemd services **no longer exist**.
+> The current source of truth is
+> [`10-SEPT-2026-PRODUCTION-DEPLOYMENT.md`](10-SEPT-2026-PRODUCTION-DEPLOYMENT.md).
+> Keep this file only for migration history and per-app bug notes (§3).
+
 This document is the ground-truth reference for what's actually running on the
 production Droplet. The Terraform files in this directory (`main.tf`,
 `variables.tf`, etc.) provision the **base infrastructure only** (the Droplet,

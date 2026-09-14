@@ -32,9 +32,25 @@ resource "hcloud_ssh_key" "generated" {
   public_key = data.local_file.public_key.content
 }
 
-# Cloud firewall: open 22 (SSH), 80 (HTTP), 443 (HTTPS), 8000 (Coolify UI)
+# Cloud firewall: inbound 22 (SSH), 80 (HTTP), 443 (HTTPS) only.
+#
+# Port 8000 (Coolify dashboard) was removed 2026-09-11 (P0 #2). Nothing depends
+# on inbound 8000 — Coolify manages 0 applications, has no FQDN and no webhooks,
+# so it was only ever a human opening the UI. Reach the dashboard through an SSH
+# tunnel instead:
+#     ssh -i ./ssh/production-infra-key -L 8000:localhost:8000 root@<server_ipv4>
+#     then open http://localhost:8000
+# The container still binds 0.0.0.0:8000 on the host; this firewall is what keeps
+# it off the internet. See 10-SEPT-2026-PRODUCTION-DEPLOYMENT.md §13.
 resource "hcloud_firewall" "coolify_fw" {
   name = "${var.server_name}-fw"
+
+  # This firewall is the only ingress control in front of a single-host
+  # production box running ~11 apps, Coolify, Traefik and the production
+  # Postgres. Never let Terraform delete/recreate it.
+  lifecycle {
+    prevent_destroy = true
+  }
 
   rule {
     direction = "in"
@@ -65,16 +81,6 @@ resource "hcloud_firewall" "coolify_fw" {
       "::/0"
     ]
   }
-
-  rule {
-    direction = "in"
-    protocol  = "tcp"
-    port      = "8000"
-    source_ips = [
-      "0.0.0.0/0",
-      "::/0"
-    ]
-  }
 }
 
 # Provision Hetzner Cloud Server
@@ -93,4 +99,17 @@ resource "hcloud_server" "coolify" {
   firewall_ids = [hcloud_firewall.coolify_fw.id]
 
   user_data = file("${path.module}/templates/cloud-init.sh.tpl")
+
+  # This server IS production. It carries all application containers, the
+  # Coolify control plane, the Traefik proxy, every app's data volume and the
+  # authoritative production Postgres (container om3fwlitdodg2ckjxbwhorn6,
+  # volume postgres-data-om3fwlitdodg2ckjxbwhorn6) — none of which live in
+  # Terraform state. A destroy/replace wipes all of it. Changing user_data,
+  # server_type, image or location forces replacement, so guard against it.
+  # Resizing must be done via the Hetzner console/API, not Terraform, until
+  # the app layer is captured in IaC. See 10-SEPT-2026-PRODUCTION-DEPLOYMENT.md.
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes  = [user_data]
+  }
 }

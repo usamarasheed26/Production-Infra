@@ -1,0 +1,11 @@
+{
+  "repo": "usamarasheed26/AIEnterpriseTransformation",
+  "branch": "master",
+  "compose": ["-f", "infra/docker-compose.coolify.yml"],
+  "envFlags": ["--env-file", ".env"],
+  "domain": "aitransformer.stratagemengine.com",
+  "healthPath": "/",
+  "healthCodes": ["200"],
+  "migrate": null,
+  "notes": "PHASE 0 DONE 2026-09-12: /opt/apps/AIEnterpriseTransformation is now a real git checkout of origin/master (commits 6b20a9c, 0ef10a4, 1f17729), verified with a clean --no-cache build before cutover, old dir kept at AIEnterpriseTransformation.pre-git-backup-20260912. IMPORTANT — envFlags MUST include [\"--env-file\", \".env\"]: compose's implicit .env lookup uses the COMPOSE FILE's directory (infra/), not the invocation cwd, when `-f infra/docker-compose.coolify.yml` is a subdirectory path — without the explicit flag, AETS_DB_*/JWT_SECRET silently resolve to blank strings and the backend gets a DATABASE_URL like postgresql+asyncpg://:@:5432/ (hit and fixed live during this Phase 0 cutover). DB fix (6b20a9c): infra/docker-compose.coolify.yml was box-only, never committed — added (no embedded Postgres, connects to `aets` on the shared authoritative instance via AETS_DB_*). Reconciling further surfaced three more undocumented server-only fixes matching DEPLOYMENT.md §3's vague 'Dockerfile/tsconfig/Suspense fixes' mention: (0ef10a4) next.config.mjs needs `output: standalone` (Dockerfile's runner does `node server.js`) + `typescript.ignoreBuildErrors: true` (a pre-existing typedRoutes type error in components/shared/AppNav.tsx otherwise fails the build outright) + a missing Suspense boundary on frontend/app/simulation/new; (1f17729) same missing-Suspense issue on frontend/app/onboarding/readiness (only caught by a full build, a truncated diff view missed it the first pass) + frontend/public/.gitkeep (Dockerfile's COPY --from=builder /app/public fails if the dir doesn't exist at all, and it's empty so git never tracked it). Frontend :3000, backend :8000 (routed on /api + /ws)."
+}

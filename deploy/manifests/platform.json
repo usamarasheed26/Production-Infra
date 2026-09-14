@@ -1,0 +1,11 @@
+{
+  "repo": "usamarasheed26/Platform",
+  "branch": "master",
+  "compose": ["-f", "docker-compose.prod.yml"],
+  "envFlags": [],
+  "domain": "platform.stratagemengine.com",
+  "healthPath": "/",
+  "healthCodes": ["200", "302", "307", "401"],
+  "migrate": null,
+  "notes": "Canonical branch = master (box HEAD 40011a6 is a direct ancestor of origin/master, fast-forwardable — no server-only commits). docker-compose.prod.yml + Dockerfile match origin/master exactly. .env.production is box-only (Phase 0: git rm --cached from the repo; .dockerignore does NOT exclude it so `next build` still bakes NEXT_PUBLIC_*). 401 = healthy Clerk-gated /. Schema managed via Supabase migrations, not at deploy. FOLLOW-UP: rotate the secrets that were exposed in git history (CLERK_SECRET_KEY, STRIPE_SECRET_KEY, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_JWT_SECRET, ANTHROPIC_API_KEY, *_SECRET HMACs)."
+}

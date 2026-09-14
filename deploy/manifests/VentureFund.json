@@ -1,0 +1,11 @@
+{
+  "repo": "usamarasheed26/VentureFund",
+  "branch": "master",
+  "compose": ["-f", "docker-compose.prod.yml"],
+  "envFlags": [],
+  "domain": "venture-fund.stratagemengine.com",
+  "healthPath": "/",
+  "healthCodes": ["200"],
+  "migrate": null,
+  "notes": "DEPLOYED 2026-09-12 (was previously not deployed at all - sim_registry had it marked is_public/seeded with zero app behind it, causing the reported TLS/503). Onboarded straight to a real git checkout at /opt/apps/VentureFund (skipped the plain-directory step). Backend is VentureFund's OWN hosted Supabase.com project (SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY in box-only .env.production, transferred from the local working copy at c:\\Simulators\\Problem Solving\\Venture Fund) - NOT the shared on-box Postgres. The already-migrated `venturefund` database on the shared instance (om3fwlitdodg2ckjxbwhorn6) is an orphaned leftover from an earlier, different plan and is not used by this deployment; left untouched pending a separate cleanup decision. No prod deploy artifacts existed in-repo before this - authored Dockerfile + docker-compose.prod.yml from scratch (see this repo's deploy/README.md pattern). Unlike fmcg/zerotopmf, the @usamarasheed26/sdk dependency is vendored as a committed tarball (vendor/usamarasheed26-sdk-2.5.2.tgz) rather than pulled from the private GitHub Packages registry, so this build needs NO NODE_AUTH_TOKEN - built clean on first try. NEXT_PUBLIC_APP_URL is a build ARG (inlined client-side), not just a runtime env var - set to https://platform.stratagemengine.com. STRATAGEM_SIM_API_KEY was rotated as part of this deploy: the key found in the local .env was a staging-scoped key that had been exposed in an investigation session transcript, so it was revoked in sim_api_keys and a fresh production-scoped key was minted directly via SQL (matching scripts/mint-sim-api-key.ts's exact generation logic) and delivered straight into the box-only .env.production - never printed to any session output. Traefik labels mirror fmcg's working pattern (certresolver=letsencrypt, port 3000 - this app's Next.js default). Verified: TLS cert issued cleanly (no Traefik default-cert fallback), HTTP 200 with real page content. sim_registry.is_public flipped back to true after verification (had been set false as an interim mitigation while this deployment was built)."
+}

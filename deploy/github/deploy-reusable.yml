@@ -1,0 +1,60 @@
+# Place this at .github/workflows/deploy-reusable.yml in a small dedicated repo
+# (recommended: usamarasheed26/stratagem-deploy). Every app repo's deploy.yml
+# calls it via `uses:`.
+#
+# Required secrets (set once at GitHub *organisation* level, or on each repo):
+#   DEPLOY_SSH_KEY   private key whose public half is in ~deploy/.ssh/authorized_keys on the box
+#   DEPLOY_HOST      46.224.15.73
+#   DEPLOY_USER      deploy
+#
+# The box script (/opt/apps/deploy.sh) does all the real work: global lock,
+# git reset to origin/<branch>, build, up -d, migrate, HTTPS health gate,
+# auto-rollback on failure. This workflow only invokes it and surfaces logs.
+
+name: Deploy (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        description: "Directory name under /opt/apps (e.g. platform, AIEnterpriseTransformation)"
+        required: true
+        type: string
+      ref:
+        description: "Git ref being deployed (for the audit log)"
+        required: false
+        type: string
+        default: ${{ github.sha }}
+
+concurrency:
+  group: deploy-${{ inputs.app }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      # Never interpolate ${{ ... }} expressions directly into the `script:`
+      # block below — GitHub Actions expands them as raw text into the shell
+      # script BEFORE it runs, so an app/ref/actor value containing quotes,
+      # backticks or `$(...)` would be executed on the SSH target. Passing
+      # them as runner env vars (picked up by `envs:` and read as plain
+      # shell variables inside the script) avoids that entirely.
+      APP_NAME: ${{ inputs.app }}
+      TARGET_REF: ${{ inputs.ref }}
+      TRIGGER_ACTOR: ${{ github.actor }}
+    steps:
+      - name: Deploy ${{ inputs.app }} to production
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 22m
+          script_stop: true
+          envs: APP_NAME,TARGET_REF,TRIGGER_ACTOR
+          script: |
+            export GITHUB_ACTOR="$TRIGGER_ACTOR"
+            export GITHUB_SHA="$TARGET_REF"
+            sudo -n --preserve-env=GITHUB_ACTOR,GITHUB_SHA /opt/apps/deploy.sh "$APP_NAME"

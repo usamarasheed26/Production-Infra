@@ -1,0 +1,11 @@
+{
+  "repo": "UNKNOWN — the account deploy key cannot access usamarasheed26/AIRevenueLeakage",
+  "branch": "main",
+  "compose": ["-f", "docker-compose.prod.yml"],
+  "envFlags": [],
+  "domain": "revsure.smartagentx.ai",
+  "healthPath": "/",
+  "healthCodes": ["200"],
+  "migrate": null,
+  "notes": "OPEN ITEM: confirm the repo name / owner / visibility and grant the deploy key access. PHASE 0: no .git on the box. DB converged onto the authoritative instance 2026-09-11 (was: own postgres:15 container db_airevenueleakage on an isolated bridge, seeded via initdb) — now DB `ai_revenue_assurance` on `om3fwlitdodg2ckjxbwhorn6`, role `ai_revenue_assurance_app` (a fresh least-privilege credential, generated at migration time — NOT a reuse of the old hardcoded POSTGRES_PASSWORD default, since that value's exposure was unaudited), wired via DATABASE_URL/DB_PASSWORD in the box-only .env.production; still no deploy-time migrate (app runs its own migrate+seed on boot via SEED_ON_BOOT=true — this reseeds sample data on every restart, a pre-existing app behavior unrelated to this migration). This box-side fix is NOT yet reflected in docker-compose.prod.yml on GitHub — fold it into the Phase 0 reconciliation PR (remove the `db` service, point DATABASE_URL at the authoritative instance, and finally drop the hardcoded DB_PASSWORD default entirely, gap #6) once repo access is granted. .env.production is box-only. DOMAIN MOVED 2026-09-11: was airevenueleakage.stratagemengine.com, now revsure.smartagentx.ai — old host kept as a 301 redirect to the new one during the transition (see 10-SEPT-2026-PRODUCTION-DEPLOYMENT.md §14). Traefik Host() rule + TLS domains on the box, and any app-level hardcoded callback/CORS URLs, still need to be updated to match (box-side change, not tracked in this repo)."
+}
