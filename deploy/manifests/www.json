@@ -1,0 +1,11 @@
+{
+  "repo": "usamarasheed26/usamarasheed26.github.io",
+  "branch": "main",
+  "compose": ["-f", "docker-compose.yml"],
+  "envFlags": [],
+  "domain": "www.stratagemengine.com",
+  "healthPath": "/",
+  "healthCodes": ["200", "304"],
+  "migrate": null,
+  "notes": "Static nginx:alpine serving www + apex, volume-mounts the git working tree (a `git reset` = instant content update, no build). Valid LE cert since 2026-09-11. Since 2026-09-11 the compose also defines an `api` service (Node/Express/pg contact-form backend, build: ./api, routed at PathPrefix(/api) priority 100) — deploy.sh's build step now runs automatically since it detects any service with `build:`. api's DATABASE_URL comes from a box-only /opt/apps/www/.env pointing at the Coolify-managed `contacts-db-coolify` database (uuid rg2p3c5ipuuti98wog46z3y8, adopted into Coolify 2026-09-11 via its API — see 10-SEPT doc §6.2/§13)."
+}

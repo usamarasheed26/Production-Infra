@@ -1,0 +1,11 @@
+{
+  "repo": "usamarasheed26/MerchantSignal",
+  "branch": "main",
+  "compose": ["-f", "docker-compose.yml"],
+  "envFlags": [],
+  "domain": "merchantsignal.smartagentx.ai",
+  "healthPath": "/",
+  "healthCodes": ["200", "302"],
+  "migrate": null,
+  "notes": "New app onboarding (2026-09-12), not a migration — no Phase 0 reconciliation needed. Shopify embedded app (Remix + Prisma/Postgres), real Partner Dashboard app already registered (client_id 74ba63b5ce31318064cf087263e784f0, shopify.app.merchantsignal.toml), repointed from an ngrok dev URL to https://merchantsignal.smartagentx.ai. DB: logical database `merchantsignal` on the authoritative instance (om3fwlitdodg2ckjxbwhorn6), role `merchantsignal_app` (least-privilege, generated password) — not a dedicated container, consistent with the DB-convergence policy. No deploy-time migrate step: the container's own start command runs `prisma migrate deploy` on every boot (self-migrating, same pattern as AIRevenueLeakage). Manual deploy only for now — this app is not push-triggered (no app is, yet; see deploy/README.md One-time setup). Open/flagged (non-blocking): the real Shopify config lacks `read_orders` scope and the orders/app-uninstalled webhook subscriptions that the app code (ShopifyOrderAttribution model, webhooks.tsx) expects — a product decision for whoever owns the Shopify app config, not an infra blocker."
+}

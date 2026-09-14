@@ -1,0 +1,19 @@
+{
+    "repo":  "usamarasheed26/ZeroToPMF",
+    "branch":  "main",
+    "compose":  [
+                    "-f",
+                    "docker-compose.prod.yml"
+                ],
+    "envFlags":  [
+                     "--env-file",
+                     ".env.production"
+                 ],
+    "domain":  "zerotopmf.stratagemengine.com",
+    "healthPath":  "/",
+    "healthCodes":  [
+                        "200"
+                    ],
+    "migrate":  null,
+    "notes":  "PHASE 0 DONE 2026-09-12: /opt/apps/ZeroToPMF is now a real git checkout of origin/feature/stratagem-platform-integration (commits bd639ab), verified with a clean --no-cache build of `api` before cutover, old dir kept at ZeroToPMF.pre-git-backup-20260912. `web` was deliberately NOT rebuilt during cutover — its Dockerfile.web needs NODE_AUTH_TOKEN (read:packages) for the private @usamarasheed26/sdk package, which isn\u0027t available; the container keeps running its existing pre-git image untouched (compose up -d was scoped to redis+migrate+api+worker only, never web) until that token exists. All ~30 backend/frontend .py/.tsx files that looked different in a naive diff turned out to be pure CRLF/LF noise (box files are LF, repo\u0027s are CRLF) — verified via a CR-stripped diff loop; only docker-compose.prod.yml/Dockerfile.web/.gitignore had real (already-known, already-committed) differences. Migration runs via the one-shot \u0027migrate\u0027 compose service (alembic upgrade head) that compose brings up before api — no separate deploy-time migrate needed. Integrates with the platform via PLATFORM_VERIFY_SESSION_URL + SIM_API_KEY (backend/.env, box-only)."
+}

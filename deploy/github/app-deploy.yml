@@ -1,0 +1,20 @@
+# Copy to .github/workflows/deploy.yml in each app repo.
+# Replace the two placeholders:
+#   <PROD_BRANCH>  the canonical production branch for THIS repo (main | master)
+#   <APP_DIR>      the directory under /opt/apps on the box for THIS app
+#                  (www | platform | leadership | autorevive | AIEnterpriseTransformation |
+#                   FMCG-Simulataor | Macrolab | ZeroToPMF | SimulationStudio | AIRevenueLeakage)
+
+name: Deploy to production
+
+on:
+  push:
+    branches: [<PROD_BRANCH>]
+  workflow_dispatch: {}   # allow a manual re-deploy from the Actions tab
+
+jobs:
+  deploy:
+    uses: usamarasheed26/stratagem-deploy/.github/workflows/deploy-reusable.yml@main
+    with:
+      app: <APP_DIR>
+    secrets: inherit

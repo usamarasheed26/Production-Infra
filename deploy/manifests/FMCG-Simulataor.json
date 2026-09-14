@@ -1,0 +1,19 @@
+{
+    "repo":  "usamarasheed26/FMCG-Simulataor",
+    "branch":  "master",
+    "compose":  [
+                    "-f",
+                    "docker-compose.prod.yml"
+                ],
+    "envFlags":  [
+                     "--env-file",
+                     ".env.production"
+                 ],
+    "domain":  "fmcg.stratagemengine.com",
+    "healthPath":  "/",
+    "healthCodes":  [
+                        "200"
+                    ],
+    "migrate":  null,
+    "notes":  "PHASE 0 DONE 2026-09-12: /opt/apps/FMCG-Simulataor is now a real git checkout of origin/feature/stratagem-integration-and-spec-consolidation (commits 661c04d, ec40f98), verified with a clean --no-cache build of `backend` before cutover, old dir kept at FMCG-Simulataor.pre-git-backup-20260912. `web` was deliberately NOT rebuilt during cutover — its Dockerfile.web needs NODE_AUTH_TOKEN (read:packages) for the private @usamarasheed26/sdk package, which isn\u0027t available; the container keeps running its existing pre-git image untouched (compose up -d was scoped to redis+backend only, never web) until that token exists. DB/SECRETS FIX (661c04d/ec40f98) already covered docker-compose.prod.yml/Dockerfile.web/nginx.conf. NOT reconciled on purpose: docker-compose.yml (the DEV file)\u0027s postgres service is commented out on the box — that was a one-off safety edit to stop an orphaned container from being recreated in PRODUCTION (10-SEPT doc §12 gap #4), not a fix that belongs in the actual local-dev compose file (a developer running this locally still needs a working local postgres) — repo\u0027s docker-compose.yml correctly still has it active, left as-is. deploy MUST use docker-compose.prod.yml only, never docker-compose.override.yml (local-only dev cruft)."
+}

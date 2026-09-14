@@ -1,0 +1,11 @@
+{
+  "repo": "usamarasheed26/leadership-sim",
+  "branch": "main",
+  "compose": ["-f", "docker-compose.yml"],
+  "envFlags": [],
+  "domain": "leadership.stratagemengine.com",
+  "healthPath": "/",
+  "healthCodes": ["200"],
+  "migrate": null,
+  "notes": "PHASE 0 DONE 2026-09-12: the 27 uncommitted edits (mostly CRLF/LF noise once filtered — only 5 files had real content) were committed to origin/main (commit b3375bc): backend/database.py's Supabase->psycopg2 migration, requirements.txt, a stale log message, docker-compose.yml's container_name/restart/Traefik-label additions, and a new migrations/001_leadership_schema.sql. Remote switched from HTTPS (no box credentials) to SSH (git@github.com:..., works via the account-level key at /root/.ssh/github_deploy_key). /opt/apps/leadership reset --hard to origin/main, rebuilt, cut over, verified healthy. .deploy.json installed. Also (DB-side, not in this diff): leadership_db was being accessed via the shared Postgres instance's superuser role — created a dedicated least-privilege leadership_app role, transferred ownership, verified with a live read/write smoke test, matching every other app's pattern. The 'duplicate app_leadership/stratagem' gap (#9 in 10-SEPT doc) is resolved/moot: it was a mid-rename container_name change (stratagem -> app_leadership), never actually two live containers. The :8082 host port publish was left as-is (firewalled off from the internet already; not part of this task)."
+}

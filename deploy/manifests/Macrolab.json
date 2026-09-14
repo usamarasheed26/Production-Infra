@@ -1,0 +1,19 @@
+{
+    "repo":  "usamarasheed26/Macrolab",
+    "branch":  "master",
+    "compose":  [
+                    "-f",
+                    "docker-compose.prod.yml"
+                ],
+    "envFlags":  [
+                     "--env-file",
+                     ".env.production"
+                 ],
+    "domain":  "macrolab.stratagemengine.com",
+    "healthPath":  "/",
+    "healthCodes":  [
+                        "200"
+                    ],
+    "migrate":  null,
+    "notes":  "PHASE 0 DONE 2026-09-12: /opt/apps/Macrolab is now a real git checkout of origin/master (commits e906972, 150ee87, 202a4c4), rebuilt and cut over, verified with a live write/read smoke test. .deploy.json installed. Old directory kept at /opt/apps/Macrolab.pre-git-backup-20260912 as a safety net (not yet deleted). DB FIX (e906972): converged off broken (0-byte) SQLite onto a dedicated `macrolab` database + `macrolab_app` role on the shared authoritative Postgres instance; schema.prisma sqlite-\u003epostgresql; DATABASE_URL via box-only .env.production/env_file. Reconciling this surfaced two MORE undocumented server-only fixes beyond DEPLOYMENT.md §3\u0027s list, now also committed: (150ee87) engine+api tsconfig/package.json reverted from ESM back to CommonJS — this was the actual root cause of the \u0027multi-day-outage\u0027 DEPLOYMENT.md references; (202a4c4) Dockerfile needs `apk add openssl` for Prisma\u0027s linux-musl-openssl-3.0.x binaryTarget to find libssl at runtime, plus a build-output CMD path fix. NEW OPEN GAP found during Phase 0 (not previously documented anywhere): Dockerfile.web does NOT build engine/dist from source — web\u0027s Vite/Rollup build cannot cleanly named-import DEFAULTS etc. from engine once engine is compiled to CommonJS (required by api\u0027s require() side). The currently-deployed web image is built from a frozen, pre-CommonJS-conversion engine/dist that exists only as an untracked file in /opt/apps/Macrolab/engine/dist (copied forward from the old directory, restored from /opt/apps/Macrolab.pre-git-backup-20260912/engine/dist — NOT reproducible from a clean clone). Fixing this properly needs engine to ship as a dual ESM/CJS package (or web\u0027s rollup config needs commonjs named-exports interop configured) — deliberately not attempted here given production risk; flagging for a dedicated follow-up."
+}

@@ -1,0 +1,11 @@
+{
+  "repo": "usamarasheed26/smartagentx-site-main",
+  "branch": "main",
+  "compose": ["-f", "docker-compose.yml"],
+  "envFlags": [],
+  "domain": "smartagentx.ai",
+  "healthPath": "/healthz",
+  "healthCodes": ["200"],
+  "migrate": null,
+  "notes": "SmartAgentX.ai production website. High-performance static Nginx Alpine container, routed by Traefik v3.6 at Host(`smartagentx.ai`) || Host(`www.smartagentx.ai`). TLS managed automatically via Traefik's Let's Encrypt resolver. DNS managed at Namecheap pointing to 46.224.15.73."
+}

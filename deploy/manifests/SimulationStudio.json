@@ -1,0 +1,11 @@
+{
+  "repo": "usamarasheed26/SimulationStudio",
+  "branch": "main",
+  "compose": ["-f", "docker-compose.prod.yml"],
+  "envFlags": [],
+  "domain": "professorstudio.stratagemengine.com",
+  "healthPath": "/",
+  "healthCodes": ["200", "307", "308"],
+  "migrate": null,
+  "notes": "PHASE 0: no .git on the box. Confirm branch (redesign-and-platform-identity vs main). DATABASE_URL (points at simulationstudio_db on the authoritative Postgres) is hardcoded in docker-compose.prod.yml — move to env_file: and rotate. CONFIRM how the schema for simulationstudio_db is managed (prisma? drizzle? manual?) and set .migrate accordingly. Answers on casestudio + studio + professorstudio; redirects to a route by design (307)."
+}
