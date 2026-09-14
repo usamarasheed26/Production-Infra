@@ -32,17 +32,25 @@ APP="${1:-}"
 MODE="${2:-deploy}"
 [ -n "$APP" ] || { echo "usage: deploy.sh <AppDir> [--check]" >&2; exit 2; }
 
+log()  { printf '%s  %s\n' "$(date -Is)" "$*"; }
+die()  { log "ERROR: $*"; exit 1; }
+
+# Reject anything but a plain directory-name-shaped app id BEFORE it's used
+# to build a path. $APP can come from a GitHub Actions input (workflow_call)
+# as well as a human at the keyboard — without this, "../../etc" or a value
+# containing shell metacharacters could make $APP_DIR resolve outside
+# $APPS_ROOT, or corrupt the log line built from it.
+[[ "$APP" =~ ^[A-Za-z0-9._-]+$ ]] || die "invalid app name '$APP' — only letters, digits, '.', '_', '-' allowed"
+
 APP_DIR="$APPS_ROOT/$APP"
 MANIFEST="$APP_DIR/.deploy.json"
 START_TS=$SECONDS
 
-log()  { printf '%s  %s\n' "$(date -Is)" "$*"; }
-die()  { log "ERROR: $*"; exit 1; }
-
 command -v jq     >/dev/null || die "jq is not installed on the box"
 command -v docker >/dev/null || die "docker not found"
 [ -d "$APP_DIR" ]        || die "$APP_DIR does not exist"
-[ -d "$APP_DIR/.git" ]   || die "$APP_DIR is not a git checkout — Phase 0 (repo reconciliation) not done for '$APP'"
+git -C "$APP_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+  || die "$APP_DIR is not a git checkout — Phase 0 (repo reconciliation) not done for '$APP'"
 [ -f "$MANIFEST" ]       || die "no manifest at $MANIFEST"
 
 BRANCH=$(jq -r '.branch'                 "$MANIFEST")

@@ -7,7 +7,9 @@
 #
 # Idempotent. Does:
 #   1. generate a dedicated deploy SSH keypair  -> ssh/deploy-key(.pub)   (gitignored)
-#   2. create the `deploy` user on the box (docker group)
+#   2. create the `deploy` user on the box (no docker-group membership --
+#      see the note in the REMOTE block below on why that would defeat the
+#      sudoers restriction in step 4)
 #   3. authorise the deploy key for `deploy`
 #   4. NOPASSWD sudoers entry: deploy may run ONLY /opt/apps/deploy.sh
 #   5. install jq; create /opt/backups/predeploy
@@ -41,7 +43,12 @@ PUB=$(cat "$DEPLOY_KEY.pub")
 set -euo pipefail
 read -r DEPLOY_PUB   # first line = the deploy public key
 id deploy &>/dev/null || { useradd -m -s /bin/bash deploy; echo "created user deploy"; }
-usermod -aG docker deploy
+# Deliberately NOT in the `docker` group: docker-group membership is
+# root-equivalent (docker run -v /:/host ... gives a root shell), which
+# would make the sudoers restriction below meaningless. deploy.sh itself
+# runs as root via the sudoers NOPASSWD entry (ALL=(root)), so every
+# docker/docker compose command it issues already runs as root — the
+# deploy user never needs docker-group access of its own.
 install -d -m 700 -o deploy -g deploy /home/deploy/.ssh
 touch /home/deploy/.ssh/authorized_keys
 grep -qF "$DEPLOY_PUB" /home/deploy/.ssh/authorized_keys || echo "$DEPLOY_PUB" >> /home/deploy/.ssh/authorized_keys

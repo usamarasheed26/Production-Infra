@@ -13,16 +13,30 @@ ok=1
 
 log "=== backup ${TS} start ==="
 
-# --- authoritative instance: globals + every non-template DB ---
-if docker exec om3fwlitdodg2ckjxbwhorn6 pg_dumpall -U postgres --globals-only 2>>"$LOG" | gzip > "$OUT/authoritative_globals.sql.gz"; then
-  log "authoritative globals OK"
-else log "authoritative globals FAILED"; ok=0; fi
+# --- authoritative instance: resolved dynamically, not hardcoded ---
+# The container name (e.g. om3fwlitdodg2ckjxbwhorn6) is a Coolify-generated
+# resource ID that changes if the database resource is ever recreated
+# (Coolify upgrade, restore, migration to a new host). Resolve it by the
+# label Coolify itself attaches instead of hardcoding the current name, so
+# a rename doesn't silently break every nightly backup.
+AUTH_DB="$(docker ps -q --filter 'label=coolify.type=database' --filter 'status=running' | head -n1)"
+if [ -z "$AUTH_DB" ]; then
+  log "FATAL: no running container with label coolify.type=database found — cannot back up the authoritative instance"
+  ok=0
+else
+  AUTH_DB_NAME="$(docker inspect --format '{{.Name}}' "$AUTH_DB" | sed 's#^/##')"
+  log "authoritative instance resolved to container: $AUTH_DB_NAME"
 
-for db in $(docker exec om3fwlitdodg2ckjxbwhorn6 psql -U postgres -tAc "SELECT datname FROM pg_database WHERE datistemplate=false AND datname<>'postgres'"); do
-  if docker exec om3fwlitdodg2ckjxbwhorn6 pg_dump -U postgres -Fc "$db" > "$OUT/authoritative_${db}.dump" 2>>"$LOG"; then
-    log "authoritative/${db} OK ($(du -h "$OUT/authoritative_${db}.dump" | cut -f1))"
-  else log "authoritative/${db} FAILED"; ok=0; fi
-done
+  if docker exec "$AUTH_DB" pg_dumpall -U postgres --globals-only 2>>"$LOG" | gzip > "$OUT/authoritative_globals.sql.gz"; then
+    log "authoritative globals OK"
+  else log "authoritative globals FAILED"; ok=0; fi
+
+  for db in $(docker exec "$AUTH_DB" psql -U postgres -tAc "SELECT datname FROM pg_database WHERE datistemplate=false AND datname<>'postgres'"); do
+    if docker exec "$AUTH_DB" pg_dump -U postgres -Fc "$db" > "$OUT/authoritative_${db}.dump" 2>>"$LOG"; then
+      log "authoritative/${db} OK ($(du -h "$OUT/authoritative_${db}.dump" | cut -f1))"
+    else log "authoritative/${db} FAILED"; ok=0; fi
+  done
+fi
 
 # --- per-simulation Postgres containers ---
 # `aets` converged onto the authoritative instance 2026-09-11 (role `aets_app`)
@@ -50,18 +64,28 @@ done
 # deletion (with explicit volume-retention confirmation) as a follow-up — see
 # 10-SEPT-2026-PRODUCTION-DEPLOYMENT.md §12 #3.
 
-# --- legacy fmcg Postgres: container removed 2026-09-11 (confirmed unused: 0
-#     connections in the preceding 72h, app already on the authoritative `fmcg`
-#     DB). Data volume fmcg-simulataor_fmcg_pgdata kept as a safety net. This
-#     block is expected to fail (non-critical) until deleted outright after a
-#     short confidence period — see 10-SEPT-2026-PRODUCTION-DEPLOYMENT.md §12 #4. ---
-if docker exec fmcg-simulataor-postgres-1 pg_dump -U postgres -Fc fmcg > "$OUT/fmcg_legacy_local.dump" 2>>"$LOG"; then
-  log "fmcg legacy-local OK"; else log "fmcg legacy-local FAILED (non-critical, container decommissioned 2026-09-11)"; fi
+# --- legacy fmcg Postgres container: REMOVED 2026-09-14 ---
+# The container (fmcg-simulataor-postgres-1) was decommissioned 2026-09-11
+# and confirmed fully gone (no longer exists in any state, `docker ps -a`
+# returns nothing for it) as of the 2026-09-14 infrastructure audit — this
+# block had been failing (harmlessly, but noisily) on every run since. The
+# real fmcg data has been on the authoritative instance since 2026-09-11
+# and is already covered by the loop above (`authoritative_fmcg.dump`).
 
-# --- MacroLab SQLite volume (whole volume, whatever state it is in) ---
+# --- MacroLab SQLite volume: legacy safety-net copy, not the source of truth ---
+# MacroLab migrated OFF this SQLite volume onto a `macrolab` database on the
+# authoritative instance on 2026-09-12 (already covered by the loop above as
+# `authoritative_macrolab.dump`) — this tar is now a best-effort archival
+# copy of the old volume, not live data. Its failure must NOT fail the whole
+# nightly backup (unlike a real DB dump failure above): if/when this volume
+# is eventually deleted as part of the SQLite-era cleanup, this step should
+# start failing and that is expected, not an incident.
 if docker run --rm -v macrolab_macrolab_sqlite_data:/d:ro -v "$OUT":/b alpine \
      tar czf /b/macrolab_sqlite_volume.tgz -C /d . 2>>"$LOG"; then
-  log "macrolab sqlite volume OK"; else log "macrolab sqlite volume FAILED"; ok=0; fi
+  log "macrolab sqlite volume (legacy) OK"
+else
+  log "macrolab sqlite volume (legacy) FAILED — non-critical, real data is in the authoritative 'macrolab' DB above"
+fi
 
 # --- checksums + retention ---
 ( cd "$OUT" && sha256sum * > SHA256SUMS 2>/dev/null || true )

@@ -34,6 +34,16 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      # Never interpolate ${{ ... }} expressions directly into the `script:`
+      # block below — GitHub Actions expands them as raw text into the shell
+      # script BEFORE it runs, so an app/ref/actor value containing quotes,
+      # backticks or `$(...)` would be executed on the SSH target. Passing
+      # them as runner env vars (picked up by `envs:` and read as plain
+      # shell variables inside the script) avoids that entirely.
+      APP_NAME: ${{ inputs.app }}
+      TARGET_REF: ${{ inputs.ref }}
+      TRIGGER_ACTOR: ${{ github.actor }}
     steps:
       - name: Deploy ${{ inputs.app }} to production
         uses: appleboy/ssh-action@v1.2.0
@@ -43,8 +53,8 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           command_timeout: 22m
           script_stop: true
-          envs: GITHUB_ACTOR,GITHUB_SHA
+          envs: APP_NAME,TARGET_REF,TRIGGER_ACTOR
           script: |
-            export GITHUB_ACTOR="${{ github.actor }}"
-            export GITHUB_SHA="${{ inputs.ref }}"
-            sudo -n --preserve-env=GITHUB_ACTOR,GITHUB_SHA /opt/apps/deploy.sh "${{ inputs.app }}"
+            export GITHUB_ACTOR="$TRIGGER_ACTOR"
+            export GITHUB_SHA="$TARGET_REF"
+            sudo -n --preserve-env=GITHUB_ACTOR,GITHUB_SHA /opt/apps/deploy.sh "$APP_NAME"
