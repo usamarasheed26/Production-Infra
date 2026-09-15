@@ -4,6 +4,9 @@
 **Date:** September 11, 2026  
 **Subject:** Feasibility Analysis for Hosting a Second Website with a Different Domain on Production Server `coolify-server`
 
+> ⚠️ **HISTORICAL PLANNING ARTIFACT — September 11, 2026.**  
+> This point-in-time specification analyzed the resource profile for `smartagentx.ai`. The application was deployed and is live in production. For current live state and architecture, see the canonical **[`INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md`](INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md)** and **[`README.md`](README.md)**.
+
 ---
 
 ## 1. Application Discovery & Identification

@@ -2,11 +2,12 @@
 
 > ⚠️ **HISTORICAL — DigitalOcean era. Superseded 2026-09-10.**
 > Production has migrated from the DigitalOcean droplet described below to
-> HetzCloud (Coolify + Traefik, single `cx43` server in `fsn1`). The droplet,
+> Hetzner Cloud (Coolify + Traefik, single `cx43` server in `fsn1`). The droplet,
 > its IPs, host Nginx, certbot and systemd services **no longer exist**.
 > The current source of truth is
-> [`10-SEPT-2026-PRODUCTION-DEPLOYMENT.md`](10-SEPT-2026-PRODUCTION-DEPLOYMENT.md).
-> Keep this file only for migration history and per-app bug notes (§3).
+> [`INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md`](INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md)
+> and [`README.md`](README.md).
+> Keep this file only for migration archaeology and legacy DigitalOcean context.
 
 This document is the ground-truth reference for what's actually running on the
 production Droplet. The Terraform files in this directory (`main.tf`,

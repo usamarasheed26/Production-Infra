@@ -5,6 +5,9 @@
 **Subject:** Terraform Code Impact Analysis for Hosting a Second Website on Current Production Infrastructure  
 **Baseline State:** Local state `terraform.tfstate` (Serial 12, Terraform v1.15.7, Provider `hcloud ~> 1.45`)
 
+> ⚠️ **HISTORICAL PLANNING ARTIFACT — September 11, 2026.**  
+> This point-in-time assessment confirmed that hosting `smartagentx.ai` required zero Terraform code changes. The baseline remains accurate. For current live state and architecture, see the canonical **[`INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md`](INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md)** and **[`README.md`](README.md)**.
+
 ---
 
 ## 1. Executive Terraform Verdict

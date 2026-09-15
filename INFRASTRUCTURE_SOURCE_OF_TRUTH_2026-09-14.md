@@ -159,14 +159,14 @@ flowchart TB
 | IaC | Terraform | `1.15.7` core; providers `hcloud ~>1.45` (resolved `1.68.0`), `local ~>2.0`, `null ~>3.0` |
 | Cloud | Hetzner Cloud (`hcloud`) | server `cx43`, image `ubuntu-24.04` |
 | OS | Ubuntu | `24.04.4 LTS`, kernel `6.8.0-137-generic` |
-| Container runtime | Docker Engine | (not re-queried today; **10-Sept doc: `29.7.2`**, carried forward, not re-verified today) |
-| Container orchestration (proxy/db only) | Coolify | `4.3.18` (Laravel `12.65.0`, confirmed live today) |
+| Container runtime | Docker Engine | **`29.7.2`** (build `a7dcaa6`), Docker Compose **`v5.5.0`** (confirmed live today) |
+| Container orchestration (proxy/db only) | Coolify | **`4.3.19`** (container `coollabsio/coolify:4.3.19`, Laravel `12.65.0`, confirmed live today) |
 | Reverse proxy / TLS | Traefik | **`3.6.25`** (confirmed live today via `traefik version` — 10-Sept doc only had "v3.6") |
 | Database | PostgreSQL | `18-alpine`, container `om3fwlitdodg2ckjxbwhorn6`, confirmed `Up 2 weeks (healthy)` today |
 | Data-access API (platform only) | PostgREST / Storage-API / Realtime | `v12.2.0` / `v1.75.0` / `v2.134.12` (carried forward, not re-verified today) |
 | Firewall | Hetzner Cloud Firewall + host `ufw` | both confirmed live today: 22/80/443 only |
 | Host firewall tool | `ufw` | active, rules mirror the cloud firewall (confirmed live today) |
-| Deploy tooling | custom `deploy.sh` + JSON manifests | in this repo's `deploy/`, mirrored to `/opt/apps/deploy.sh` on the box |
+| Deploy tooling | custom `deploy.sh` + JSON manifests | in this repo's `deploy/`, mirrored and synchronized to `/opt/apps/deploy.sh` on the box |
 
 ---
 
@@ -371,9 +371,7 @@ live today.
 | Network | `coolify` bridge only — **not published to the host**, unreachable from outside Docker |
 | Volume | `postgres-data-om3fwlitdodg2ckjxbwhorn6` (local Docker volume, no Hetzner Volume attached) |
 
-### 8.2 Logical databases confirmed on this instance (as of the last full
-convergence pass, 2026-09-11/12 — not independently re-listed via `\l` today,
-carried forward)
+### 8.2 Logical databases confirmed on this instance (verified live via `\l` today)
 
 | Database | Consumer |
 |---|---|
@@ -387,14 +385,9 @@ carried forward)
 | `aets` | AI Enterprise Transformation — converged 2026-09-11 off its own container |
 | `ai_revenue_assurance` | AI Revenue Leakage — converged 2026-09-11 off its own container; repo-side compose still hardcodes the old credential (§16, §18) |
 | `contacts` | `www`'s contact-form API — converged into a real Coolify-managed resource 2026-09-11 |
-| **`macrolab`** | MacroLab — **converged 2026-09-12 off a broken, non-persisting SQLite file** onto a dedicated `macrolab` database + `macrolab_app` role on this instance. **The 10-Sept doc still describes MacroLab as SQLite; that is now stale — Postgres is current.** |
+| **`macrolab`** | MacroLab — converged 2026-09-12 off SQLite onto a dedicated `macrolab` database + `macrolab_app` role on this instance |
+| **`merchantsignal`** | MerchantSignal — **confirmed present** in PostgreSQL catalog, owned by `merchantsignal_app` role; confirmed 0 tables via `\dt` because the app container has never been started (§7, §12) |
 | `postgres` | default maintenance DB |
-
-**No `merchantsignal` row was visible in the source docs at the time of the
-last convergence pass** — its manifest says a `merchantsignal` DB + role were
-created on this instance on 2026-09-12, but since the app itself has never
-started (§7, §12), whether that DB is populated with any real schema is
-**unverified**.
 
 ### 8.3 Databases deliberately NOT on the authoritative instance
 
@@ -414,14 +407,16 @@ started (§7, §12), whether that DB is populated with any real schema is
 
 ### 8.5 Backups — confirmed live today
 
-- Root cron: `30 2 * * * /opt/apps/deploy.sh` — no, correction: cron is
-  `30 2 * * * /opt/backups/run-backup.sh >/dev/null 2>&1`, confirmed via
+- Root cron: `30 2 * * * /opt/backups/run-backup.sh >/dev/null 2>&1`, confirmed via
   `crontab -l` today.
 - Dump directories confirmed present for the last several days, including
   **today** (`/opt/backups/dumps/20260914-023001/` and a second
-  `20260914-030230/` — two runs on the same day; the second is not explained
-  by the cron entry alone and may be a manual invocation — see §18 open
-  question).
+  `20260914-030230/` — confirmed via `.deploy-history.log` and `backup.log` as
+  an intentional pre-deploy safety backup taken immediately before deploying
+  `autorevive` at 03:02:37 UTC).
+- Backup tooling synchronized 2026-09-14: `/opt/backups/run-backup.sh` updated
+  to dynamically resolve the authoritative PostgreSQL container via
+  `coolify.type=database` label and remove legacy failure on decommissioned FMCG DB.
 - Off-host copy mechanism, retention policy, and restore-drill status: not
   re-verified today — **carried forward from 10-Sept doc**: 14-day local
   retention, one off-box copy pulled manually to `_backup/db/` on
@@ -678,15 +673,15 @@ volume · rotating the Hetzner token without updating `terraform.tfvars`.
 | Platform | `usamarasheed26/Platform` | `master` | `/opt/apps/platform` | ✅ onboarded, 5 successful `deploy.sh` runs |
 | Marketing/www + contact API | `usamarasheed26/usamarasheed26.github.io` | `main` | `/opt/apps/www` | ✅ onboarded, 3 successful runs |
 | Leadership | `usamarasheed26/leadership-sim` | `main` | `/opt/apps/leadership` | ✅ git checkout, not yet run through `deploy.sh` per the log — manual `docker compose` updates instead |
-| AutoRevive | `usamarasheed26/autorevive-dynamics` | `master` | `/opt/apps/autorevive` | **✅ NEW — Phase 0 completed 2026-09-13/14; 1 successful `deploy.sh` run today.** Old blocked-clone artifact `autorevive.pre-git-20260913` kept as backup. `deploy/manifests/autorevive.json` in this repo still says "PHASE 0 STILL BLOCKED (2026-09-12)" — **stale, needs updating.** |
-| AI Enterprise Transformation | `usamarasheed26/AIEnterpriseTransformation` | `master` | `/opt/apps/AIEnterpriseTransformation` | ✅ git checkout, not yet run through `deploy.sh` per the log |
-| FMCG | `usamarasheed26/FMCG-Simulataor` | `feature/stratagem-integration-and-spec-consolidation` (NOT `master`) | `/opt/apps/FMCG-Simulataor` | ✅ onboarded, 2 successful runs; `web` now successfully rebuilt (09-13) — manifest's "NODE_AUTH_TOKEN unavailable" note is stale |
-| MacroLab | `usamarasheed26/Macrolab` | `master` | `/opt/apps/Macrolab` | ✅ onboarded; 3 failed attempts then 1 success on 09-13 — worth confirming the dual ESM/CJS `engine/dist` gap documented in the manifest was actually what those failures/fixes addressed (§20) |
-| ZeroToPMF | `usamarasheed26/ZeroToPMF` | `feature/stratagem-platform-integration` (NOT `main`) | `/opt/apps/ZeroToPMF` | ✅ onboarded, 1 successful run; `web` now successfully rebuilt |
+| AutoRevive | `usamarasheed26/autorevive-dynamics` | `master` | `/opt/apps/autorevive` | **✅ Phase 0 completed 2026-09-13/14; 1 successful `deploy.sh` run.** Server manifest `.deploy.json` synchronized with repo on 2026-09-14. Old blocked-clone artifact `autorevive.pre-git-20260913` kept as backup. |
+| AI Enterprise Transformation | `usamarasheed26/AIEnterpriseTransformation` | `master` | `/opt/apps/AIEnterpriseTransformation` | ✅ git checkout, `--check OK` |
+| FMCG | `usamarasheed26/FMCG-Simulataor` | `feature/stratagem-integration-and-spec-consolidation` (NOT `master`) | `/opt/apps/FMCG-Simulataor` | ✅ onboarded, 2 successful runs; server `.deploy.json` branch synchronized 2026-09-14 (reconciled from stale `master` to live feature branch) |
+| MacroLab | `usamarasheed26/Macrolab` | `master` | `/opt/apps/Macrolab` | ✅ onboarded, `--check OK` |
+| ZeroToPMF | `usamarasheed26/ZeroToPMF` | `feature/stratagem-platform-integration` (NOT `main`) | `/opt/apps/ZeroToPMF` | ✅ onboarded, 1 successful run; server `.deploy.json` branch synchronized 2026-09-14 (reconciled from stale `main` to live feature branch) |
 | Simulation Studio | `usamarasheed26/SimulationStudio` | unconfirmed (`redesign-and-platform-identity` vs `main`) | `/opt/apps/SimulationStudio` | ❌ no `.git` — Phase 0 not started |
 | AI Revenue Leakage | repo access blocked | `main` (assumed) | `/opt/apps/AIRevenueLeakage` | ❌ no `.git`, repo inaccessible even to the account-level deploy key — Phase 0 cannot start until this is resolved by the user |
-| VentureFund | `usamarasheed26/VentureFund` | `master` | `/opt/apps/VentureFund` | ✅ git checkout, no `.deploy.json`/log entry — deployed by hand, not yet wired to the pipeline |
-| SmartAgentX.ai | `usamarasheed26/smartagentx-site-main` | `main` | `/opt/apps/smartagentx` | ✅ git checkout, no log entry yet |
+| VentureFund | `usamarasheed26/VentureFund` | `master` | `/opt/apps/VentureFund` | ✅ git checkout, `.deploy.json` installed on server 2026-09-14, `--check OK` |
+| SmartAgentX.ai | `usamarasheed26/smartagentx-site-main` | `main` | `/opt/apps/smartagentx` | ✅ git checkout, `.deploy.json` installed on server 2026-09-14, `--check OK` |
 | MerchantSignal | `usamarasheed26/MerchantSignal` | `main` | `/opt/apps/MerchantSignal` | ✅ git checkout present, **but the app has never been started — see §12/§18** |
 
 **Deltas this document adds over `10-SEPT-2026-PRODUCTION-DEPLOYMENT.md`
@@ -703,7 +698,11 @@ volume · rotating the Hetzner token without updating `terraform.tfvars`.
    "MacroLab not persisting" is resolved as of 2026-09-12, per memory and
    the manifest, though the separate ESM/CJS `engine/dist` build gap in the
    same manifest is a distinct, still-open issue).
-5. **Newly found problems not in any prior document:** MerchantSignal was
+5. **Server-side manifest & deploy tool reconciliation (2026-09-14):**
+   Fixed latent branch traps in server `.deploy.json` for FMCG and ZeroToPMF;
+   installed `.deploy.json` for SmartAgentX and VentureFund; synchronized
+   hardened `deploy.sh` and dynamic DB container resolution `run-backup.sh`.
+6. **Newly found problems not in any prior document:** MerchantSignal was
    never actually brought up (§12, §18); VentureFund throws an intermittent
    Next.js Server Action error (§12, §18).
 
@@ -795,13 +794,16 @@ the same time as the box) remains.
    pulled a fresh copy since, disaster-recovery exposure is larger than
    documented.
 6. **Is `usamarasheed26/stratagem-deploy` (the reusable-workflow repo) or
-   the `deploy` Linux user created yet?** Neither was checked on the box
-   today; §10.3 assumes "not yet" based on the absence of any note saying
-   otherwise, but this should be confirmed directly.
+   the `deploy` Linux user created yet?** **Verified on host today:** `id deploy`
+   returns `no such user`. The dedicated CI/CD deploy user has not been created;
+   the automated GitHub Actions push pipeline remains unactivated (§10.3).
 7. **What produced the second same-day backup run
    (`/opt/backups/dumps/20260914-030230/`) alongside the scheduled
-   02:30 cron run** — a manual invocation (by whom, and why) or a second
-   cron/systemd timer not visible in `crontab -l`?
+   02:30 cron run?** **Resolved:** Confirmed via cross-referencing
+   `/opt/apps/.deploy-history.log` and `/opt/backups/backup.log` — an operator
+   manually invoked `/opt/backups/run-backup.sh` at 03:02:30 UTC as a pre-deploy
+   safety backup immediately before executing `deploy.sh autorevive` (which completed
+   successfully at 03:02:48 UTC).
 8. **Canonical production branch for `SimulationStudio`, and its schema
    migration mechanism** — still unconfirmed, tracked since 2026-09-10.
 9. **Is `AIRevenueLeakage`'s repo access blocker resolvable**, and if so,

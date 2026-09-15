@@ -4,6 +4,9 @@
 **Date:** September 11, 2026  
 **Subject:** Risk Matrix, Availability Impact Analysis, and Mitigation Safeguards for Multi-Tenant Production Infrastructure
 
+> ⚠️ **HISTORICAL PLANNING ARTIFACT — September 11, 2026.**  
+> This point-in-time risk register evaluated safeguards prior to collocating `smartagentx.ai`. The migration completed safely. For current live state and architecture, see the canonical **[`INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md`](INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md)** and **[`README.md`](README.md)**.
+
 ---
 
 ## 1. Production Availability Impact Assessment

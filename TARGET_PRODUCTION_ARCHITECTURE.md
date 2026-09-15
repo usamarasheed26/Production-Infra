@@ -4,6 +4,9 @@
 **Date:** September 11, 2026  
 **Subject:** Architectural Blueprint for Hosting `smartagentx.ai` Alongside `stratagemengine.com` on `coolify-server`
 
+> ⚠️ **HISTORICAL PLANNING ARTIFACT — September 11, 2026.**  
+> This point-in-time architecture blueprint proposed the multi-domain collocation of `smartagentx.ai`. Collocation was completed and is live. For the authoritative, live-verified architecture, see the canonical **[`INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md`](INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md)** and **[`README.md`](README.md)**.
+
 ---
 
 ## 1. Target Architecture Overview

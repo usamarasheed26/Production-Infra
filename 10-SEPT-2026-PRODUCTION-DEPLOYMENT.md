@@ -1,11 +1,14 @@
 # 10 September 2026 — Production Deployment (Source of Truth)
 
-> **Status:** AUTHORITATIVE. This document supersedes `DEPLOYMENT.md` and
-> `ADMIN_GUIDE.md`, which describe the retired DigitalOcean droplet and are now
-> **historical reference only**.
+> ⚠️ **Status: SUPERSEDED (Historical baseline as of 2026-09-12).**
+> This document details the initial Hetzner Cloud migration and is accurate
+> for the 2026-09-10 to 2026-09-12 period.
+> It has been **superseded by [`INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md`](INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md)**
+> and the root [`README.md`](README.md), which reflect live state, the unified
+> deployment pipeline (`deploy.sh`), and the SmartAgentX collocation.
 >
-> Source-of-truth hierarchy: **live HetzCloud environment → app/infra code →
-> Terraform → this document → (historical) DigitalOcean docs.**
+> Source-of-truth hierarchy: **live Hetzner environment → app git repos →
+> Terraform → [`INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md`](INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md) → this document → (historical) DigitalOcean docs.**
 
 ---
 

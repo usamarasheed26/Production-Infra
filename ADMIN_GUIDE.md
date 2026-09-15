@@ -3,9 +3,9 @@
 > ⚠️ **HISTORICAL — DigitalOcean era. Superseded 2026-09-10.**
 > The procedures below (host Nginx vhosts, `certbot`, `systemctl` app units,
 > the DO API power-cycle, `165.227.101.246`) describe the retired droplet.
-> Current production is HetzCloud + Coolify + Traefik; see
-> [`10-SEPT-2026-PRODUCTION-DEPLOYMENT.md`](10-SEPT-2026-PRODUCTION-DEPLOYMENT.md)
-> §9 (deployment) and §14 (runbook).
+> Current production is Hetzner Cloud + Coolify + Traefik; see
+> [`INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md`](INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md)
+> and [`README.md`](README.md) for live architecture and current runbooks.
 
 `DEPLOYMENT.md` is the **reference**: what's running, where, and why (per-app
 paths, env files, and the specific bugs fixed in each repo). This file is the

@@ -4,6 +4,9 @@
 **Date:** September 11, 2026  
 **Subject:** Zero-Downtime Deployment Sequence for Hosting Second Website (`smartagentx.ai`) on Production Server `coolify-server`
 
+> ⚠️ **HISTORICAL PLANNING ARTIFACT — September 11, 2026.**  
+> This point-in-time document evaluated the deployment sequence for hosting `smartagentx.ai`. The migration was executed and the site is now live in production. For current live state and architecture, see the canonical **[`INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md`](INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md)** and **[`README.md`](README.md)**.
+
 ---
 
 ## 1. Migration Strategy Overview

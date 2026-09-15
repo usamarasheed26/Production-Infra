@@ -5,6 +5,9 @@
 **Primary Source of Truth:** Terraform Configuration (`c:\Simulators\Production Infrastructure`)  
 **Verified Live State:** Hetzner Cloud API & Host Runtime Reconciliation (`10-SEPT-2026-PRODUCTION-DEPLOYMENT.md`)
 
+> ⚠️ **HISTORICAL PLANNING ARTIFACT — September 11, 2026.**  
+> This point-in-time capacity assessment evaluated whether the server could support collocating `smartagentx.ai`. Collocation was completed successfully. For current live state and architecture, see the canonical **[`INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md`](INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md)** and **[`README.md`](README.md)**.
+
 ---
 
 ## 1. Executive Summary & Infrastructure Overview

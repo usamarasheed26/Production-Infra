@@ -4,6 +4,9 @@
 **Date:** September 11, 2026  
 **Subject:** Comparative Feasibility and Conflict Assessment for Hosting a Second Website on `coolify-server`
 
+> ⚠️ **HISTORICAL PLANNING ARTIFACT — September 11, 2026.**  
+> This point-in-time document evaluated the feasibility and architecture for hosting `smartagentx.ai` alongside the main platform. The decision analyzed was executed and the site is now live in production. For current live state and architecture, see the canonical **[`INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md`](INFRASTRUCTURE_SOURCE_OF_TRUTH_2026-09-14.md)** and **[`README.md`](README.md)**.
+
 ---
 
 ## 1. Comprehensive Compatibility Matrix
