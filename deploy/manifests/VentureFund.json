@@ -2,7 +2,7 @@
   "repo": "usamarasheed26/VentureFund",
   "branch": "master",
   "compose": ["-f", "docker-compose.prod.yml"],
-  "envFlags": [],
+  "envFlags": ["--env-file", ".env.production"],
   "domain": "venture-fund.stratagemengine.com",
   "healthPath": "/",
   "healthCodes": ["200"],
