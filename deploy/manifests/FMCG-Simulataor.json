@@ -1,6 +1,6 @@
 {
     "repo":  "usamarasheed26/FMCG-Simulataor",
-    "branch":  "feature/stratagem-integration-and-spec-consolidation",
+    "branch":  "master",
     "compose":  [
                     "-f",
                     "docker-compose.prod.yml"
